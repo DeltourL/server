@@ -2,7 +2,6 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <unistd.h>
@@ -23,6 +22,12 @@ int creer_serveur(int port)
   saddr.sin_family = AF_INET ; /* Socket ipv4 */
   saddr.sin_port = htons(port); /* Port d'Ã©coute */
   saddr.sin_addr.s_addr = INADDR_ANY ; /* Ã©coute sur toutes les interfaces */
+
+  //permet au processus de faire le bind sur le même port (sauf si un processus est déjà en listen dessus)
+  int optval = 1;
+  if (setsockopt(socket_serveur, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) == -1)
+    perror("Can not set SO_REUSEADDR option");
+  
   if(bind(socket_serveur, (struct sockaddr *)& saddr , sizeof( saddr )) == -1)
     {
       perror ("bind socket_serveur");
