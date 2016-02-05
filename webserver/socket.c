@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
@@ -39,9 +40,29 @@ int creer_serveur(int port)
   return socket_serveur;
 }
 
-void initialiser_signaux(void) {
-  if (signal(SIGPIPE, SIG_IGN) == SIG_ERR)
-    {
-      perror("signal");
-    }
+void traitement_signal(int sig)
+{
+  printf("Signal %d reçu\n",sig);
+  if (sig == SIGCHLD)
+  {
+    int retour;
+    waitpid(-1,&retour,0);
+  }
+}
+
+void initialiser_signaux(void)
+{
+  if(signal(SIGPIPE, SIG_IGN) == SIG_ERR)//si je recoit un sigpipe je previen mais je crash pas
+  {
+    perror("sigpipe");
+  }
+
+  struct sigaction sa ;
+  sa.sa_handler = traitement_signal;
+  sigemptyset(&sa.sa_mask);
+  sa.sa_flags = SA_RESTART;
+  if(sigaction(SIGCHLD,&sa,NULL) == -1)//si un des fils est zombi j'execute traitement_signal(int sig)
+  {
+    perror("sigaction(SIGCHLD)");
+  }
 }
