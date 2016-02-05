@@ -17,7 +17,7 @@ int main(int argc, char **argv)
 		return serveur;
 	}
 
-	printf("%s\n", "server start listening to 8080 ...");
+	printf("%s\n", "server started listening on 8080 ...");
 
 	while(1) 
 	{  
@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 		write(socket_client, message_bienvenue, strlen(message_bienvenue));
 
 
-		char buf[100];
+		char buf[100] = "a";
 		while(strlen(buf) != 0)//tant que la co est valide
 		{
 		    bzero(buf,100);

@@ -4,4 +4,7 @@
 2-	le serveur crash, 
 	avec -z, nc n'attend pas le message de bienvenue et le serveur ecrit donc dans un socket sans lecteur
 
-3-	
+3-	Unable to connect to remote host: Connection refused
+	impossible de se connecter avec une adresse IPv6
+
+4-	Le serveur attend que le premier client soit déconnecté avant de répondre au deuxième
