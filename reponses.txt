@@ -1,0 +1,7 @@
+1-	bind socket_serveur: Address already in use,
+	il faut visiblement un delay pour liberer l'address utilise par le serveur
+
+2-	le serveur crash, 
+	avec -z, nc n'attend pas le message de bienvenue et le serveur ecrit donc dans un socket sans lecteur
+
+3-	
