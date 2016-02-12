@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <unistd.h>
+#include <stdlib.h>
 
 int main(int argc, char **argv) {
 	argc = argc;
@@ -62,6 +63,7 @@ int main(int argc, char **argv) {
 				}
 			}//une fois que le client deco
 			close(socket_client);
+			exit(0);
 		}
 		close(socket_client);
 	}
