@@ -43,25 +43,30 @@ int main(int argc, char **argv) {
 
 
 			char buf[100] = "a";
-			//tant que la co est valide
-			while(strlen(buf) != 0) {
-				bzero(buf,100);
-				int n = read(socket_client, buf, 100);//on lit ce que nous dit le client
-				if (n < 0) {
-					perror("ERROR reading from socket_client");
-					return -5;
-				}
-
-				printf("server received %d bytes: %s", n, buf);
-		  
-				if (n!=0) {
-					n = write(socket_client, buf, strlen(buf));//on repete au client ce qu'il nous a dit
-		    		if (n < 0) { 
-						perror("ERROR writing to socket_client");
+			char bufServer[110] = "<server>";
+			
+			FILE* file = fdopen(socket_client, "w+");
+			if (file == NULL) {
+					fprintf(stderr, "%s\n", "ERROR opening socket_client");
+					return -7;
+			} else {
+				//tant que la co est valide
+				while(strlen(buf) != 0) {
+					bzero(buf,100);
+					if (fgets(buf, 100, file) == NULL) {
+						fprintf(stderr, "%s\n", "ERROR reading from socket_client");
+						return -5;
+					}
+					
+					printf("server received %zu bytes: %s", strlen(buf), buf);
+					strcpy(bufServer, "<server>");
+					strcat(bufServer, buf);
+					if (fprintf(file, bufServer) < 0) { 
+						fprintf(stderr, "%s\n", "ERROR writing to socket_client");
 						return -6;
-		    		}
-				}
-			}//une fois que le client deco
+					}
+				}//une fois que le client deco
+			}
 			close(socket_client);
 			exit(0);
 		}
