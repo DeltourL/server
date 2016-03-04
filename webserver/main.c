@@ -78,14 +78,10 @@ int main(int argc, char **argv) {
 		if (fork()==0) {
 			/* On peut maintenant dialoguer avec le client */
 			//const char * message_bienvenue = "0100001001101111011011100110101001101111011101010111001000100000001011000010000001100010011010010110010101101110011101100110010101101110011101010110010100100000011100110111010101110010001000000110110101101111011011100010000001110011011001010111001001110110011001010111010101110010\n102 157 156 152 157 165 162 054 040 142 151 145 156 166 145 156 165 145 040 163 165 162 040 155 157 156 040 163 145 162 166 145 165 162\n66 111 110 106 111 117 114 44 32 98 105 101 110 118 101 110 117 101 32 115 117 114 32 109 111 110 32 115 101 114 118 101 117 114\n42 6f 6e 6a 6f 75 72 2c 20 62 69 65 6e 76 65 6e 75 65 20 73 75 72 20 6d 6f 6e 20 73 65 72 76 65 75 72\nLXVI CXI CX CVI CXI CXVII CXIV XLIV XXXII XCVIII CV CI CX CXVIII CI CX CXVII CI XXXII CXV CXVII CXIV XXXII CIX CXI CX XXXII CXV CI CXIV CXVIII CI CXVII CXIV\n-... --- -. .--- --- ..- .-. --..-- / -... .. . -. ...- . -. ..- . / ... ..- .-. / -- --- -. / ... . .-. ...- . ..- .-.\nßo|\\|joµ12, b][env3nue su.- mo/V $&12\\/eur\n7752e0fad02e1ac9dbda87af611e6602\n79039ee375d4ec5cd4b8d29bdba19e279ee8c03e\nBonjour, bienvenue sur mon serveur\n";
-			const char * message_bienvenue = "bj";
-			char * entete_ligne_ok="HTTP/1.1 200 OK\r\n";
-			char * entete_ligne_taille_msg_bjr = strcat("Content-Length:",strcat((char *)strlen(message_bienvenue),"\r\n"));
-			char * entete_msg_bjr = strcat(entete_ligne_ok,strcat(entete_ligne_taille_msg_bjr,"\r\n"));
-			char * msg_bjr = strcat(entete_msg_bjr,message_bienvenue);
-			//TODO visiblement sa fait planter !!! cause err et du coup on temine le child directe
+			
+			
 
-			char buf[100] = "a";
+			char buf[255] = "a";
 			//char bufServer[110] = "<server>";
 			
 			FILE* file = fdopen(socket_client, "w+");
@@ -97,8 +93,8 @@ int main(int argc, char **argv) {
 				int ligne_vide_detecter=0;
 				//tant que la co est valide
 				while(strlen(buf) != 0) {
-					bzero(buf,100);
-					if (fgets(buf, 100, file) == NULL) {
+					bzero(buf,255);
+					if (fgets(buf, 255, file) == NULL) {
 						fprintf(stderr, "%s\n", "ERROR reading from socket_client");
 						return -5;
 					}
@@ -106,7 +102,7 @@ int main(int argc, char **argv) {
 					//printf("server received %zu bytes: %s", strlen(buf), buf);
 					printf("%s\n", buf);
 
-					char bufcpy[100];
+					char bufcpy[255];
 					strcpy(bufcpy, buf);
 					int i = compter_char(bufcpy,' ');
 					if (strncmp(buf,"GET",3) == 0 && i==2 && str_match(bufcpy))
@@ -123,9 +119,17 @@ int main(int argc, char **argv) {
 
 						if (ligne_vide_detecter==1)
 						{
+							char * msg_bjr="HTTP/1.1 200 OK\r\nContent-Length: 1079\r\n\r\n0100001001101111011011100110101001101111011101010111001000100000001011000010000001100010011010010110010101101110011101100110010101101110011101010110010100100000011100110111010101110010001000000110110101101111011011100010000001110011011001010111001001110110011001010111010101110010\n102 157 156 152 157 165 162 054 040 142 151 145 156 166 145 156 165 145 040 163 165 162 040 155 157 156 040 163 145 162 166 145 165 162\n66 111 110 106 111 117 114 44 32 98 105 101 110 118 101 110 117 101 32 115 117 114 32 109 111 110 32 115 101 114 118 101 117 114\n42 6f 6e 6a 6f 75 72 2c 20 62 69 65 6e 76 65 6e 75 65 20 73 75 72 20 6d 6f 6e 20 73 65 72 76 65 75 72\nLXVI CXI CX CVI CXI CXVII CXIV XLIV XXXII XCVIII CV CI CX CXVIII CI CX CXVII CI XXXII CXV CXVII CXIV XXXII CIX CXI CX XXXII CXV CI CXIV CXVIII CI CXVII CXIV\n-... --- -. .--- --- ..- .-. --..-- / -... .. . -. ...- . -. ..- . / ... ..- .-. / -- --- -. / ... . .-. ...- . ..- .-.\nßo|\\|joµ12, b][env3nue su.- mo/V $&12\\/eur\n7752e0fad02e1ac9dbda87af611e6602\n79039ee375d4ec5cd4b8d29bdba19e279ee8c03e\nBonjour, bienvenue sur mon serveur\n";
+
 							write(socket_client, msg_bjr, strlen(msg_bjr));
-							//write(socket_client, "HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\nok co", strlen("HTTP/1.1 200 OK\r\nContent-Length: 5\r\n\r\nok co"));
 						}
+					}
+					else
+					{
+						char * msg_400="HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n";
+
+						write(socket_client, msg_400, strlen(msg_400));
+						break;
 					}
 
 					/*strcpy(bufServer, "<server>");
@@ -136,6 +140,7 @@ int main(int argc, char **argv) {
 					}*/
 				}//une fois que le client deco
 			}
+			fclose(file);
 			close(socket_client);
 			exit(0);
 		}
