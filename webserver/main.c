@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
 					
 					if(entete_ok == 1)
 					{
-						if(strncmp(buf,"\n",3) == 0||strncmp(buf,"\r\n",3) == 0)//3 a remplacer non ?
+						if(strncmp(buf,"\n",1) == 0||strncmp(buf,"\r\n",2) == 0)
 						{
 							ligne_vide_detecter=1;
 						}
